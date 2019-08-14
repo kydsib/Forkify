@@ -1,15 +1,37 @@
-import axios from 'axios';
+import Search from "./modules/Search";
+import * as searchView from "./views/searchView";
+import { elements, renderLoader, clearLoader } from "./views/base";
 
-async function getResults(query) {
-    const key = '298560efeb6876ee6445c8625f6b5f8d';
-    try {
-        const result = await axios(`https://www.food2fork.com/api/search?key=${key}&q=${query}`);
-        const recipes = result.data.recipes;
-        console.log(recipes);
-    } catch (error) {
-        alert(error);
-    }
+// Global state of the app
+// - Search Object
+// - Current recipe Object
+// - Shopping list Object
+// - Liked recipes
 
-}
+const state = {};
 
-getResults('pizza');
+const controlSearch = async () => {
+  // 1. Get query from view
+  const query = searchView.getInput();
+  if (query) {
+    // 2. Create new search object and add to state
+    state.search = new Search(query);
+
+    // 3. Prepare UI for results
+    searchView.clearInput();
+    searchView.clearSerchResults();
+    renderLoader(elements.searchRes);
+
+    // 4. Search for recipies
+    await state.search.getResults();
+
+    // 5. Render results on UI
+    clearLoader();
+    searchView.renderResults(state.search.result);
+  }
+};
+
+elements.searchForm.addEventListener("submit", e => {
+  e.preventDefault();
+  controlSearch();
+});
