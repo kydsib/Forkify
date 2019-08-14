@@ -9,13 +9,7 @@ export const clearInput = () => {
 export const clearSerchResults = () => {
   elements.searchResultList.innerHTML = "";
 };
-/*
-How limitRecipeTitle works: examp. title - "Pasta with tomato sauce and spinach"
-title.split = ['Pasta', 'with', 'tomato', 'sauce', 'and', 'spinach']
-accumulator (acc): 0 / acc + cur lenght = 5 / newTitle = ['Pasta']
-ratas suksis kol sekantis pilnas zodis tilps i 17. Jei pilnas zodis nebetilps
-funkcija grazins newTitle val?
-*/
+
 const limitRecipeTitle = (title, limit = 17) => {
   const newTitle = [];
   if (title.length > limit) {
@@ -47,8 +41,6 @@ const renderRecipe = recipe => {
   elements.searchResultList.insertAdjacentHTML("beforeend", markup);
 };
 
-// recipes gauna visa objekta is idex.js -> searchView.renderResults(state.search.result);
-// ir visa ta data paduodama kaip recipes = {}? butu logiska nes parametrus pasiimu per .
 export const renderResults = recipes => {
   recipes.forEach(renderRecipe);
 };
