@@ -1,4 +1,5 @@
 import Search from "./modules/Search";
+import Recipe from "./modules/Recipe";
 import * as searchView from "./views/searchView";
 import { elements, renderLoader, clearLoader } from "./views/base";
 
@@ -9,10 +10,13 @@ import { elements, renderLoader, clearLoader } from "./views/base";
 // - Liked recipes
 
 const state = {};
-
+/*
+--  SEARCH CONTROLLER
+*/
 const controlSearch = async () => {
   // 1. Get query from view
   const query = searchView.getInput();
+
   if (query) {
     // 2. Create new search object and add to state
     state.search = new Search(query);
@@ -22,12 +26,17 @@ const controlSearch = async () => {
     searchView.clearSerchResults();
     renderLoader(elements.searchRes);
 
-    // 4. Search for recipies
-    await state.search.getResults();
+    try {
+      // 4. Search for recipies
+      await state.search.getResults();
 
-    // 5. Render results on UI
-    clearLoader();
-    searchView.renderResults(state.search.result);
+      // 5. Render results on UI
+      clearLoader();
+      searchView.renderResults(state.search.result);
+    } catch (err) {
+      console.log(`Error in recipe search. Please try again!`);
+      clearLoader();
+    }
   }
 };
 
@@ -42,6 +51,41 @@ elements.searchResPages.addEventListener("click", e => {
     const goToPage = parseInt(btn.dataset.goto, 10);
     searchView.clearSerchResults();
     searchView.renderResults(state.search.result, goToPage);
-    console.log(goToPage);
   }
 });
+
+/*
+--  RECIPE CONTROLLER
+*/
+const controlRecipe = async () => {
+  // Taking ID from window.location using hash
+  const id = window.location.hash.replace("#", "");
+  console.log(id);
+
+  if (id) {
+    // Prepare UI for changes
+    // Create new rcp obj
+    state.recipe = new Recipe(id);
+
+    try {
+      // Geting rcp data, parcing ingredients
+      await state.recipe.getRecipe();
+      state.recipe.parseIngredients();
+      // Servings and time calc
+      state.recipe.calcTime();
+      state.recipe.calcServings();
+      // Rendering rcp
+      console.log(state.recipe);
+    } catch (err) {
+      alert(`Error in recipe processing!`);
+    }
+  }
+};
+
+// window.addEventListener("hashchange", controlRecipe);
+// //this one is in case user saves page link and opens it directly
+// window.addEventListener("load", controlRecipe);
+
+["hashchange", "load"].forEach(event =>
+  window.addEventListener(event, controlRecipe)
+);
