@@ -1,6 +1,7 @@
 import Search from "./modules/Search";
 import Recipe from "./modules/Recipe";
 import * as searchView from "./views/searchView";
+import * as recipeView from "./views/recipeView";
 import { elements, renderLoader, clearLoader } from "./views/base";
 
 // Global state of the app
@@ -64,8 +65,13 @@ const controlRecipe = async () => {
 
   if (id) {
     // Prepare UI for changes
+    recipeView.clearRecipe();
+    renderLoader(elements.recipe); // need to pass in the parrent so it would know where to load
     // Create new rcp obj
     state.recipe = new Recipe(id);
+
+    // Higlighting selected recipe in search results
+    if (state.search) searchView.highlightSelected(id);
 
     try {
       // Geting rcp data, parcing ingredients
@@ -75,7 +81,8 @@ const controlRecipe = async () => {
       state.recipe.calcTime();
       state.recipe.calcServings();
       // Rendering rcp
-      console.log(state.recipe);
+      clearLoader();
+      recipeView.renderRecipe(state.recipe);
     } catch (err) {
       alert(`Error in recipe processing!`);
     }

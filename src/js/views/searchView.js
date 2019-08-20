@@ -11,6 +11,18 @@ export const clearSerchResults = () => {
   elements.searchResPages.innerHTML = "";
 };
 
+export const highlightSelected = id => {
+  // leaving active class only on one elem
+  const resultsArr = Array.from(document.querySelectorAll(".results__link"));
+  resultsArr.forEach(el => {
+    el.classList.remove("results__link--active");
+  });
+  // selecting here instead of base, because elem is not on page when it loads
+  document
+    .querySelector(`a[href="#${id}"]`)
+    .classList.add("results__link--active"); // do not need a . before class
+};
+
 const limitRecipeTitle = (title, limit = 17) => {
   const newTitle = [];
   if (title.length > limit) {
