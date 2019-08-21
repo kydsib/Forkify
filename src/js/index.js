@@ -47,6 +47,7 @@ elements.searchForm.addEventListener("submit", e => {
 });
 
 elements.searchResPages.addEventListener("click", e => {
+  // https://developer.mozilla.org/en-US/docs/Web/API/Element/closest
   const btn = e.target.closest(".btn-inline");
   if (btn) {
     const goToPage = parseInt(btn.dataset.goto, 10);
@@ -93,6 +94,23 @@ const controlRecipe = async () => {
 // //this one is in case user saves page link and opens it directly
 // window.addEventListener("load", controlRecipe);
 
+// Puting it to one function
 ["hashchange", "load"].forEach(event =>
   window.addEventListener(event, controlRecipe)
 );
+
+// Handling recipe button clicks
+elements.recipe.addEventListener("click", e => {
+  // https://developer.mozilla.org/en-US/docs/Web/API/Element/matches
+  if (e.target.matches(".btn-decrease, .btn-decrease * ")) {
+    // * indicates that children of it are included
+    if (state.recipe.servings > 1) {
+      state.recipe.updateServings("dec");
+      recipeView.updateServingsIngrdients(state.recipe);
+    }
+  } else if (e.target.matches(".btn-increase, .btn-increase * ")) {
+    state.recipe.updateServings("inc");
+    recipeView.updateServingsIngrdients(state.recipe);
+  }
+  console.log(state.recipe);
+});
