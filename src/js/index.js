@@ -1,5 +1,6 @@
 import Search from "./modules/Search";
 import Recipe from "./modules/Recipe";
+import List from "./modules/List";
 import * as searchView from "./views/searchView";
 import * as recipeView from "./views/recipeView";
 import { elements, renderLoader, clearLoader } from "./views/base";
@@ -30,10 +31,17 @@ const controlSearch = async () => {
     try {
       // 4. Search for recipies
       await state.search.getResults();
-
       // 5. Render results on UI
       clearLoader();
-      searchView.renderResults(state.search.result);
+
+      // 6. Check if there is sutch recipe
+
+      if (state.search.result.length === 0) {
+        searchView.noResults(query);
+      } else {
+        // 7. Render results to the UI
+        searchView.renderResults(state.search.result);
+      }
     } catch (err) {
       console.log(`Error in recipe search. Please try again!`);
       clearLoader();
@@ -112,5 +120,4 @@ elements.recipe.addEventListener("click", e => {
     state.recipe.updateServings("inc");
     recipeView.updateServingsIngrdients(state.recipe);
   }
-  console.log(state.recipe);
 });

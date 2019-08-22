@@ -30,7 +30,7 @@ export default class Recipe {
 
   // Picking random number
   calcServings() {
-    this.servings = 6;
+    this.servings = 4;
   }
 
   parseIngredients() {

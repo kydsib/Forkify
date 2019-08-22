@@ -54,6 +54,16 @@ const renderRecipe = recipe => {
   elements.searchResultList.insertAdjacentHTML("beforeend", markup);
 };
 
+export const noResults = query => {
+  const markup = `
+  <div>
+      <h1 class="heading-2">no results for "${query}"</h1>
+  </div>
+  `;
+
+  elements.searchResultList.insertAdjacentHTML("beforeend", markup);
+};
+
 // type : previous or next
 const createButton = (page, type) => `
   <button class="btn-inline results__btn--${type}" data-goto=${
