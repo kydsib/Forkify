@@ -1,9 +1,11 @@
 import Search from "./modules/Search";
 import Recipe from "./modules/Recipe";
 import List from "./modules/List";
+import Likes from "./modules/Likes";
 import * as searchView from "./views/searchView";
 import * as recipeView from "./views/recipeView";
 import * as listView from "./views/listView";
+import * as likesView from "./views/likesView";
 import { elements, renderLoader, clearLoader } from "./views/base";
 
 // Global state of the app
@@ -71,7 +73,6 @@ elements.searchResPages.addEventListener("click", e => {
 const controlRecipe = async () => {
   // Taking ID from window.location using hash
   const id = window.location.hash.replace("#", "");
-  console.log(id);
 
   if (id) {
     // Prepare UI for changes
@@ -92,8 +93,9 @@ const controlRecipe = async () => {
       state.recipe.calcServings();
       // Rendering rcp
       clearLoader();
-      recipeView.renderRecipe(state.recipe);
+      recipeView.renderRecipe(state.recipe, state.likes.isLiked(id));
     } catch (err) {
+      console.log(err);
       alert(`Error in recipe processing!`);
     }
   }
@@ -116,7 +118,6 @@ const controlList = () => {
   state.recipe.ingredients.forEach(el => {
     const item = state.list.addItem(el.count, el.unit, el.ingredient);
     listView.renderItem(item);
-    console.log(listView.renderItem(item));
   });
 };
 
@@ -133,6 +134,44 @@ elements.shopping.addEventListener("click", e => {
   }
 });
 
+/*
+--  LIKES CONTROLLER
+*/
+
+const controlLike = () => {
+  if (!state.likes) state.likes = new Likes();
+
+  const currentID = state.recipe.id;
+
+  if (!state.likes.isLiked(currentID)) {
+    const newLike = state.likes.addLike(
+      currentID,
+      state.recipe.title,
+      state.recipe.author,
+      state.recipe.img
+    );
+
+    likesView.toggleLikeBtn(true);
+
+    likesView.renderLike(newLike);
+  } else {
+    state.likes.deleteLike(currentID);
+    likesView.toggleLikeBtn(false);
+    likesView.deleteLike(currentID);
+  }
+  likesView.toggleLikeMenu(state.likes.getNumLikes());
+};
+
+//Restoring liked rcp from localStorage
+
+window.addEventListener("load", () => {
+  state.likes = new Likes();
+  state.likes.readStorage();
+  likesView.toggleLikeMenu(state.likes.getNumLikes());
+
+  state.likes.likes.forEach(like => likesView.renderLike(like));
+});
+
 // Handling recipe button clicks
 elements.recipe.addEventListener("click", e => {
   // https://developer.mozilla.org/en-US/docs/Web/API/Element/matches
@@ -147,5 +186,8 @@ elements.recipe.addEventListener("click", e => {
     recipeView.updateServingsIngrdients(state.recipe);
   } else if (e.target.matches(".recipe__btn--add, recipe__btn--add *")) {
     controlList();
+  } else if (e.target.matches(".recipe__love, .recipe__love *")) {
+    // Likes controller
+    controlLike();
   }
 });

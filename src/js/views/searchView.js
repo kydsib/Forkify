@@ -19,11 +19,11 @@ export const highlightSelected = id => {
   });
   // selecting here instead of base, because elem is not on page when it loads
   document
-    .querySelector(`a[href="#${id}"]`)
+    .querySelector(`.results__link[href="#${id}"]`)
     .classList.add("results__link--active"); // do not need a . before class
 };
 
-const limitRecipeTitle = (title, limit = 17) => {
+export const limitRecipeTitle = (title, limit = 17) => {
   const newTitle = [];
   if (title.length > limit) {
     title.split(" ").reduce((accumulator, cur) => {
